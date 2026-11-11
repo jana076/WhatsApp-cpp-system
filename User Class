@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -71,12 +72,17 @@ public:
     }
 
     bool checkPassword(string pwd) const {
-        return (password == pwd);
+        return (pwd.length() >= 6 && password == pwd);
     }
 
     void changePassword(string newPwd) {
-        password = newPwd;
-        updateLastSeen();
+        if (newPwd.length() >= 6) {
+            password = newPwd;
+            updateLastSeen();
+        }
+        else {
+            cout << "Password must be at least 6 characters long.\n";
+        }
     }
 };
 
