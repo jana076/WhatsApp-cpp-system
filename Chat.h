@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include "Message.h"
 using namespace std;
 
 class Chat {
