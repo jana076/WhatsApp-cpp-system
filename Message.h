@@ -1,15 +1,12 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
+
 #include <iostream>
 #include <string>
 #include <ctime>
 
 using namespace std;
 
-
-// ========================
-//      MESSAGE CLASS
-// ========================
 class Message {
 private:
     string sender;
@@ -27,7 +24,7 @@ private:
         copy->content = msg->content;
         copy->timestamp = msg->timestamp;
         copy->status = msg->status;
-        copy->replyTo = nullptr; // Avoid deep copy of replyTo to prevent circular references
+        copy->replyTo = nullptr;
         return copy;
     }
 
@@ -48,7 +45,6 @@ public:
         replyTo = nullptr;
     }
 
-    //copy constructor
     Message(const Message& other) {
         sender = other.sender;
         content = other.content;
@@ -57,7 +53,6 @@ public:
         replyTo = copyMessage(other.replyTo);
     }
 
-    //copy assignment operator
     Message& operator= (const Message& other) {
         if (this != &other) {
             sender = other.sender;
@@ -113,9 +108,13 @@ public:
     void updateTimestamp() {
         time_t now = time(0);
         tm localT;
+#ifdef _WIN32
         localtime_s(&localT, &now);
+#else
+        localtime_r(&now, &localT);
+#endif
         char buffer[100];
-        strftime(buffer, 100, "%Y-%m-%d %H:%M:%S", &localT);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &localT);
         timestamp = buffer;
     }
 
@@ -159,4 +158,5 @@ public:
         }
     }
 };
+
 #endif
