@@ -2,7 +2,6 @@
 #define CHAT_H
 
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <string>
 #include "Message.h"
@@ -90,27 +89,6 @@ public:
             }
         }
         return results;
-    }
-
-    void exportToFile(const string& filename) const {
-        ofstream file(filename.c_str());
-        if (!file.is_open()) {
-            return;
-        }
-
-        file << "Chat: " << (chatName.empty() ? "Chat" : chatName) << endl;
-        file << "Participants:";
-        for (size_t i = 0; i < participants.size(); i++) {
-            file << " " << participants[i];
-        }
-        file << endl << endl;
-
-        for (size_t i = 0; i < messages.size(); i++) {
-            file << "[" << messages[i].getTimestamp() << "] "
-                 << messages[i].getSender() << ": "
-                 << messages[i].getContent()
-                 << " (" << messages[i].getStatus() << ")" << endl;
-        }
     }
 };
 
