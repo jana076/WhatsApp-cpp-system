@@ -22,10 +22,12 @@ public:
 
     void displayChat() const override {
         cout << "Chat Name: " << chatName << endl;
-        if (messages.size() == 0)
+        if (messages.size() == 0) {
             cout << "No messages yet\n";
+        }
         else {
-            for (int i = 0; i < messages.size(); i++) {
+            for (size_t i = 0; i < messages.size(); i++) {
+                cout << "[" << i << "] ";
                 messages[i].display();
             }
         }
