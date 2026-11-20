@@ -27,6 +27,7 @@ public:
         }
         else {
             for (size_t i = 0; i < messages.size(); i++) {
+                showTypingIndicator(messages[i].getSender());
                 cout << "[" << i << "] ";
                 messages[i].display();
             }
