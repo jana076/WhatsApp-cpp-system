@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <algorithm>
 #include "Chat.h"
 
 using namespace std;
@@ -17,8 +16,9 @@ private:
 
 public:
     GroupChat(vector<string> users, string name, string creator)
-        : Chat(users, name), description("") {
-        if (!creator.empty()) {
+        : Chat(users, name) {
+        description = "";
+        if (creator != "") {
             if (!isParticipant(creator)) {
                 participants.push_back(creator);
             }
@@ -26,47 +26,8 @@ public:
         }
     }
 
-    void addAdmin(string newAdmin) {
-        if (!isParticipant(newAdmin)) {
-            cout << "Error: " << newAdmin << " is not a participant in this group.\n";
-            return;
-        }
-        if (isAdmin(newAdmin)) {
-            cout << newAdmin << " is already an admin.\n";
-            return;
-        }
-        admins.push_back(newAdmin);
-    }
-
-    bool removeParticipant(const string& admin, const string& userToRemove) {
-        if (!isAdmin(admin)) {
-            cout << "Access denied: Only admins can remove participants.\n";
-            return false;
-        }
-        if (!isParticipant(userToRemove)) {
-            cout << "Error: User is not in this group.\n";
-            return false;
-        }
-        if (isAdmin(userToRemove) && admins.size() == 1) {
-            cout << "Error: Cannot remove the only remaining admin.\n";
-            return false;
-        }
-
-        participants.erase(
-            remove(participants.begin(), participants.end(), userToRemove),
-            participants.end()
-        );
-
-        admins.erase(
-            remove(admins.begin(), admins.end(), userToRemove),
-            admins.end()
-        );
-
-        return true;
-    }
-
     bool isAdmin(string username) const {
-        for (size_t i = 0; i < admins.size(); i++) {
+        for (int i = 0; i < admins.size(); i++) {
             if (admins[i] == username) {
                 return true;
             }
@@ -75,7 +36,7 @@ public:
     }
 
     bool isParticipant(string username) const {
-        for (size_t i = 0; i < participants.size(); i++) {
+        for (int i = 0; i < participants.size(); i++) {
             if (participants[i] == username) {
                 return true;
             }
@@ -83,52 +44,107 @@ public:
         return false;
     }
 
+    void addAdmin(string newAdmin) {
+        if (!isParticipant(newAdmin)) {
+            cout << newAdmin << " is not in this group." << endl;
+            return;
+        }
+        if (isAdmin(newAdmin)) {
+            cout << newAdmin << " is already an admin." << endl;
+            return;
+        }
+        admins.push_back(newAdmin);
+    }
+
+    bool removeParticipant(string admin, string userToRemove) {
+        if (!isAdmin(admin)) {
+            cout << "Only admins can remove members." << endl;
+            return false;
+        }
+        if (!isParticipant(userToRemove)) {
+            cout << "User not found in group." << endl;
+            return false;
+        }
+        if (isAdmin(userToRemove) && admins.size() == 1) {
+            cout << "Cannot remove the last admin." << endl;
+            return false;
+        }
+
+        for (int i = 0; i < participants.size(); i++) {
+            if (participants[i] == userToRemove) {
+                participants.erase(participants.begin() + i);
+                break;
+            }
+        }
+
+        for (int i = 0; i < admins.size(); i++) {
+            if (admins[i] == userToRemove) {
+                admins.erase(admins.begin() + i);
+                break;
+            }
+        }
+
+        return true;
+    }
+
     void setDescription(string desc) {
         description = desc;
     }
 
     void displayChat() const override {
-        cout << "=== Group: " << (chatName.empty() ? "Unnamed Group" : chatName) << " ===\n";
-        if (!description.empty()) {
-            cout << "Description: " << description << "\n";
+        if (chatName == "") {
+            cout << "=== Group: Unnamed ===" << endl;
+        }
+        else {
+            cout << "=== Group: " << chatName << " ===" << endl;
+        }
+
+        if (description != "") {
+            cout << "Description: " << description << endl;
         }
 
         cout << "Participants (" << participants.size() << "): ";
-        for (size_t i = 0; i < participants.size(); i++) {
-            cout << participants[i] << (i + 1 < participants.size() ? ", " : "");
+        for (int i = 0; i < participants.size(); i++) {
+            cout << participants[i];
+            if (i < participants.size() - 1) {
+                cout << ", ";
+            }
         }
-        cout << "\n";
+        cout << endl;
 
         cout << "Admins (" << admins.size() << "): ";
-        for (size_t i = 0; i < admins.size(); i++) {
-            cout << admins[i] << (i + 1 < admins.size() ? ", " : "");
+        for (int i = 0; i < admins.size(); i++) {
+            cout << admins[i];
+            if (i < admins.size() - 1) {
+                cout << ", ";
+            }
         }
-        cout << "\n----------------------------------------\n";
+        cout<<endl;
 
-        if (messages.empty()) {
-            cout << "No messages yet.\n";
+        if (messages.size() == 0) {
+            cout << "No messages yet." << endl;
             return;
         }
 
-        for (size_t i = 0; i < messages.size(); i++) {
+        for (int i = 0; i < messages.size(); i++) {
             cout << "[" << i << "] ";
             messages[i].display();
         }
     }
 
-    void sendJoinRequest(const string& username) {
+    void sendJoinRequest(string username) {
         if (isParticipant(username)) {
-            cout << username << " is already a member of this group.\n";
+            cout << username << " is already in the group." << endl;
             return;
         }
-        for (size_t i = 0; i < joinRequests.size(); i++) {
+        for (int i = 0; i < joinRequests.size(); i++) {
             if (joinRequests[i] == username) {
-                cout << username << " already sent a join request.\n";
+                cout << username << " already requested to join." << endl;
                 return;
             }
         }
         joinRequests.push_back(username);
-        cout << "Join request sent by " << username << ".\n";
+        cout << "Join request sent by " << username << "." << endl;
     }
 };
 
