@@ -13,7 +13,7 @@ Software Engineering Training Project - Team 5
 
 ## Requirements
 - C++11 compiler or later.
-- Compilation command: `g++ -std=c++11 -Wall -Wextra`
+- Compilation command: `g++ -std=c++11 -Wall -Wextra Main.cpp -o whatsapp`
 - Memory leak-free execution.
 - Proper memory management for dynamically allocated Chat objects.
 - Follow Object-Oriented Programming principles, including Inheritance and Polymorphism.
