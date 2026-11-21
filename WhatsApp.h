@@ -22,20 +22,27 @@ public:
         currentUserIndex = -1;
     }
 
-    int findUserIndex(string username) {
-        for (int i = 0; i < users.size(); i++) {
+    ~WhatsApp() {
+        for (size_t i = 0; i < chats.size(); i++) {
+            delete chats[i];
+        }
+        chats.clear();
+    }
+
+    int findUserIndex(string username) const {
+        for (size_t i = 0; i < users.size(); i++) {
             if (users[i].getUsername() == username) {
-                return i;
+                return (int)i;
             }
         }
         return -1;
     }
 
-    bool isLoggedIn() {
+    bool isLoggedIn() const {
         return currentUserIndex != -1;
     }
 
-    string getCurrentUsername() {
+    string getCurrentUsername() const {
         if (!isLoggedIn()) {
             return "";
         }
@@ -116,6 +123,16 @@ public:
             return;
         }
 
+        for (size_t i = 0; i < chats.size(); i++) {
+            vector<string> p = chats[i]->getParticipants();
+            if (p.size() == 2 &&
+                ((p[0] == getCurrentUsername() && p[1] == target) ||
+                 (p[0] == target && p[1] == getCurrentUsername()))) {
+                cout << "Private chat already exists." << endl;
+                return;
+            }
+        }
+
         PrivateChat* c = new PrivateChat(getCurrentUsername(), target);
         chats.push_back(c);
         cout << "Private chat created." << endl;
@@ -133,6 +150,11 @@ public:
         cin.ignore();
         getline(cin, name);
 
+        if (name.empty()) {
+            cout << "Group name cannot be empty." << endl;
+            return;
+        }
+
         cout << "Number of members to add: ";
         cin >> n;
 
@@ -147,9 +169,17 @@ public:
             if (findUserIndex(m) == -1) {
                 cout << m << " not found." << endl;
             }
+            else if (m == getCurrentUsername()) {
+                cout << "You are already added as the creator." << endl;
+            }
             else {
                 members.push_back(m);
             }
+        }
+
+        if (members.size() < 2) {
+            cout << "Group must have at least 2 valid participants." << endl;
+            return;
         }
 
         GroupChat* g = new GroupChat(members, name, getCurrentUsername());
@@ -157,7 +187,7 @@ public:
         cout << "Group created." << endl;
     }
 
-    void viewChats() {
+    void viewChats() const {
         if (!isLoggedIn()) {
             cout << "Please login first." << endl;
             return;
@@ -166,9 +196,9 @@ public:
         string me = getCurrentUsername();
         bool found = false;
 
-        for (int i = 0; i < chats.size(); i++) {
+        for (size_t i = 0; i < chats.size(); i++) {
             vector<string> p = chats[i]->getParticipants();
-            for (int j = 0; j < p.size(); j++) {
+            for (size_t j = 0; j < p.size(); j++) {
                 if (p[j] == me) {
                     chats[i]->displayChat();
                     cout << endl;
@@ -186,13 +216,3 @@ public:
     void logout() {
         if (!isLoggedIn()) {
             cout << "Not logged in." << endl;
-            return;
-        }
-
-        users[currentUserIndex].setStatus("Offline");
-        cout << "Logged out." << endl;
-        currentUserIndex = -1;
-    }
-};
-
-#endif
