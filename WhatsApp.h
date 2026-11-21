@@ -216,3 +216,13 @@ public:
     void logout() {
         if (!isLoggedIn()) {
             cout << "Not logged in." << endl;
+            return;
+        }
+
+        users[currentUserIndex].setStatus("Offline");
+        cout << "Logged out." << endl;
+        currentUserIndex = -1;
+    }
+};
+
+#endif
