@@ -1,6 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include "WhatsApp.h"
 
 using namespace std;
@@ -19,11 +22,11 @@ void runDemo() {
     vector<Chat*> chats;
 
     PrivateChat* p = new PrivateChat(u1.getUsername(), u2.getUsername());
-    Message m1(u1.getUsername(), "Hey Sara, ready?");
+    Message m1(u1.getUsername(), "Hey Sara, ready? :)");
     m1.addEmoji(":)");
     p->addMessage(m1);
 
-    Message m2(u2.getUsername(), "Yes almost done");
+    Message m2(u2.getUsername(), "Yes almost done <3");
     m2.addEmoji("<3");
     m2.setReplyTo(&m1);
     p->addMessage(m2);
@@ -39,21 +42,29 @@ void runDemo() {
     g->addAdmin(u2.getUsername());
     g->sendJoinRequest(u3.getUsername());
 
-    Message gm(u1.getUsername(), "Welcome everyone!");
+    Message gm(u1.getUsername(), "Welcome everyone! :D");
+    gm.addEmoji(":D");
     g->addMessage(gm);
 
     chats.push_back(g);
 
-    for (int i = 0; i < chats.size(); i++) {
+    for (size_t i = 0; i < chats.size(); i++) {
         cout << "\nChat " << i + 1 << ":" << endl;
         chats[i]->displayChat();
     }
 
-    cout << "\nRemoving sara:" << endl;
+    cout << "\n--- Testing Search & Edge Cases ---" << endl;
+    vector<Message> found = p->searchMessages("ready");
+    cout << "Search 'ready' count: " << found.size() << endl;
+
+    cout << "\nNon-admin (omar) trying to remove sara:" << endl;
+    g->removeParticipant(u3.getUsername(), u2.getUsername());
+
+    cout << "\nAdmin (jana) removing sara:" << endl;
     g->removeParticipant(u1.getUsername(), u2.getUsername());
     g->displayChat();
 
-    for (int i = 0; i < chats.size(); i++) {
+    for (size_t i = 0; i < chats.size(); i++) {
         delete chats[i];
     }
     chats.clear();
@@ -118,6 +129,10 @@ void runApp() {
 }
 
 int main() {
+#ifdef _WIN32
+    SetConsoleOutputCP(65001);
+#endif
+
     int mode;
 
     while (true) {
